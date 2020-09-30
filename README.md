@@ -73,7 +73,7 @@ This configuration applies to *all modes*. Useful when your strip has leds that 
 
 Send a bitmask in hex to `LED_MCU/setEnabledLeds`. The bitmask is automatically zero-padded at the end.
 
-For example a payload of `00F1` (which is `0000000011110011` in binary) will enable only leds 9-12 and 15-16 counting from the MCU.
+For example a payload of `00F3` (which is `0000000011110011` in binary) will enable only leds 9-12 and 15-16 counting from the MCU.
 
 ## Over The Air update:
 

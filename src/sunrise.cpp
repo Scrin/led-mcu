@@ -9,7 +9,6 @@
 
 #include "common.h"
 
-int whiteLevel = 255;
 int sun = (SUNSIZE * NUM_LEDS) / 100;
 int sunPhase = 256;
 int wakeDelay = 256;
@@ -50,22 +49,6 @@ void increaseSunFadeStep()
     }
 }
 
-void increaseWhiteLevel()
-{
-    if (whiteLevel < 256)
-    {
-        whiteLevel++;
-    }
-    if (sunPhase < 128)
-    {
-        whiteLevelTimerID = timer.setTimeout(wakeDelay * 10, increaseWhiteLevel);
-    }
-    else if (sunPhase < 256)
-    {
-        whiteLevelTimerID = timer.setTimeout(wakeDelay * 2, increaseWhiteLevel);
-    }
-}
-
 void drawAurora(int sunLeft, int SunRight)
 {
     RgbwColor color = RgbwColor(1, 0, 0, 0);
@@ -94,22 +77,22 @@ void drawSun()
     int sunStart = (NUM_LEDS / 2) - (currentSun / 2);
     int newSunLeft = sunStart - 1;
     int newSunRight = sunStart + currentSun;
-    int maxRed = map(sunPhase, 0, 256, 255, -20);
-    if (maxRed < 0) {
-        maxRed = 0;
-    }
-    int maxGreen = map(sunPhase, 0, 256, 64, 0);
+    int maxRed = max(1l, map(sunPhase, 0, 256, 0, 255));
+    int maxGreen = max(0l, map(sunPhase, 0, 256, -192, 255));
+    int maxBlue = max(0l, map(sunPhase, 0, 256, -255, 255));
+    int maxWhite = max(0l, map(sunPhase, 0, 256, -32, 255));
     if (newSunLeft >= 0 && newSunRight <= NUM_LEDS && sunPhase > 0)
     {
         int redValue = map(sunFadeStep, 0, 256, 1, maxRed);
         int greenValue = map(sunFadeStep, 0, 256, 0, maxGreen);
-        int whiteValue = map(sunFadeStep, 0, 256, 0, whiteLevel);
-        stripLeds[newSunLeft] = RgbwColor(redValue, greenValue, 0, whiteValue);
-        stripLeds[newSunRight] = RgbwColor(redValue, greenValue, 0, whiteValue);
+        int blueValue = map(sunFadeStep, 0, 256, 0, maxBlue);
+        int whiteValue = map(sunFadeStep, 0, 256, 0, maxWhite);
+        stripLeds[newSunLeft] = RgbwColor(redValue, greenValue, blueValue, whiteValue);
+        stripLeds[newSunRight] = RgbwColor(redValue, greenValue, blueValue, whiteValue);
     }
     drawAurora(newSunLeft, newSunRight);
 
-    RgbwColor color = RgbwColor(maxRed, maxGreen, 0, whiteLevel);
+    RgbwColor color = RgbwColor(maxRed, maxGreen, maxBlue, maxWhite);
     for (int i = sunStart; i < sunStart + currentSun; i++)
     {
         stripLeds[i] = color;
@@ -124,7 +107,6 @@ void sunrise()
 
 void startSunrise(int duration)
 {
-    whiteLevel = 0;
     sunPhase = 0;
     sunFadeStep = 0;
     wakeDelay = duration * 4;
@@ -141,6 +123,5 @@ void startSunrise(int duration)
         timer.deleteTimer(sunPhaseTimerID);
     }
     increaseSunPhase();
-    increaseWhiteLevel();
     increaseSunFadeStep();
 }
