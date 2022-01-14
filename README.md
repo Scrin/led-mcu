@@ -2,6 +2,8 @@
 
 Used to control addressable LED strips with MQTT using a ESP8266 NodeMCU, to be used with Home Assistant.
 
+Note: superseded by [HomeMCU](https://github.com/Scrin/HomeMCU)
+
 ## Setup:
 
 - Clone/download this repository
